@@ -1,5 +1,6 @@
 # Scend
 
+![scend-logo](logo.png)
 
 ## API
 

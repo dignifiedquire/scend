@@ -20,8 +20,8 @@ defmodule Scend.Server do
     :gen_server.start __MODULE__, connection, []
   end
 
-  def send(server, msg) do
-    GenServer.call(server, {:send, msg})
+  def send(msg) do
+    :gen_server.call __MODULE__, {:send, msg})
   end
 
   def init(connection) do
@@ -44,6 +44,7 @@ defmodule Scend.Server do
   end
 
   def handle_info({ :tcp_closed, _ }, _connection) do
+    IO.puts "Closing connection..."
     { :stop, :normal, _connection }
   end
 
@@ -51,4 +52,5 @@ defmodule Scend.Server do
     connection |> Socket.Stream.send! msg
     { :noreply, connection }
   end
+
 end

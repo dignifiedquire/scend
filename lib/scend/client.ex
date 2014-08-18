@@ -1,42 +1,29 @@
 defmodule Scend.Client do
 
+  def connect(host \\ "127.0.0.1", port \\ 8080) do
 
-  # Client API
+    socket = Socket.TCP.connect!(host, port, packet: :line)
 
-  def connect(host \\ "127.0.0.1", port \\ 8080, nick) do
+    IO.puts "Connected to #{host}:#{port}"
 
-    socket = Socket.TCP.connect! host, port, packet: :line
+    spawn_link __MODULE__, :loop, [socket]
 
-    IO.puts "#{nick}: Connected to #{host}:#{port}"
-    state = %{socket: socket, nick: nick}
+    socket
+  end
 
-    loop state
+  def send(client, msg) do
+    client |> Socket.Stream.send!(msg)
   end
 
   # Private API
 
-  defp loop(state) do
-    read_line() |> eval_line(state.socket)
-    state.socket |> Socket.Stream.recv! |> print(state.nick)
-
-    loop(state)
+  def loop(socket) do
+    socket |> Socket.Stream.recv!() |> print()
+    loop socket
   end
 
-
-  defp print(msg, nick) do
-    IO.puts "#{nick}: #{msg}\n"
-  end
-
-  defp read_line do
-    case IO.gets "> " do
-      :eof -> IO.puts "-- finished\n"
-      {:error, reason} -> IO.puts "-- error: #{inspect reason}\n"
-      data -> data
-    end
-  end
-
-  defp eval_line(line, socket) do
-    socket |> Socket.Stream.send! line
+  defp print(msg) do
+    IO.puts "< #{msg}\n"
   end
 
 end

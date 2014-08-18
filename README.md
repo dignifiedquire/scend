@@ -6,16 +6,26 @@
 
 ```elixir
 # User 1
-Scend.login %user{name: "user1"}
-Scend.addContact %invite{name: "user2", host: "127.0.0.1", port: 8080, secret: "secret key"}
-Scend.send "user2", "hello"
+iex> Scend.start
+{:ok, pid}
+iex> Scend.login "user1"
+:ok
+iex> Scend.redeem_invite %invite{name: "user2", host: "127.0.0.1", port: 8080, secret: "secret key"}
+:ok
+iex> Scend.contacts
+[ %user{name: "user2"} ]
+iex> Scend.send "user2", "hello"
+:ok
 ```
 
 ```elixir
 # User 2
-Scend.login %{name: "user2"}
-Scend.createInvite
-# => %invite{name: "user2", host: "127.0.0.1", port: 8080, secret: "secret key"}
+iex> Scend.start
+{:ok, pid}
+iex> Scend.login "user2"
+:ok
+iex> Scend.create_invite
+%invite{name: "user2", host: "127.0.0.1", port: 8080, secret: "secret key"}
 ```
 
 ## Development
